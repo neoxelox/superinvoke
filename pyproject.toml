@@ -1,0 +1,84 @@
+[tool.poetry]
+name = "superinvoke"
+version = "0.1.0"
+description = "An Invoke wrapper with extra handy features."
+authors = ["Alex <alex@neoxelox.com>"]
+
+[tool.poetry.dependencies]
+python = ">=3.7,<4.0"
+rich = "10.7.0"
+invoke = { git = "https://github.com/neoxelox/invoke.git" }
+download = "^0.3.5"
+
+[tool.poetry.dev-dependencies]
+autoflake = { git = "https://github.com/neoxelox/autoflake.git" }
+black = "^21.7b0"
+flake8 = "3.9.0"
+flake8-black = "^0.2.3"
+flake8-colors = "^0.1.9"
+flake8-isort = "^4.1.1"
+flakehell = "^0.9.0"
+isort = "^5.9.3"
+mypy = "^0.910"
+pylint = "^2.10.2"
+pytest = "^6.2.4"
+pytest-xdist = "^2.3.0"
+
+[tool.flakehell]
+# List of error codes: (flakehell code <code>)
+# - https://flake8.pycqa.org/en/latest/user/error-codes.html
+# - https://pycodestyle.readthedocs.io/en/latest/intro.html#error-codes
+format = "${cyan_underline}%(path)s${reset}:${yellow_bold}%(row)d${reset}:${green_bold}%(col)d${reset}: ${red_bold}%(code)s${reset} ${white}%(text)s${reset}"
+max_line_length = 120
+show_source = true
+statistics = true
+count = true
+jobs = "auto"
+exclude = ["**/__pycache__/*", "**/__init__.py"]
+
+[tool.flakehell.plugins]
+"flake8-black" = ["+*"]
+"flake8-isort" = ["+*"]
+mccabe = ["+*"]
+pycodestyle = ["+*", "-W0621", "-E203", "-E1101"]
+pyflakes = ["+*"]
+pylint = ["+*", "-W0621", "-E1101"]
+
+[tool.isort]
+profile = "black"
+py_version = "39"
+line_length = 120
+multi_line_output = 3
+known_first_party = ["superinvoke"]
+default_section = "THIRDPARTY"
+sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
+extend_skip_glob = ["**/__pycache__/*", "**/__init__.py"]
+
+[tool.black]
+line-length = 120
+target-version = ['py39']
+include = '.*\.py'
+extend-exclude = '(.*__init__\.py)'
+
+[tool.autoflake]
+recursive = true
+in_place = true
+remove_unused_variables = true
+remove_all_unused_imports = true
+exclude = ["**/__pycache__/*", "**/__init__.py"]
+
+[tool.mypy]
+python_version = "3.9"
+disallow_untyped_defs = true
+disallow_any_unimported = true
+no_implicit_optional = true
+check_untyped_defs = true
+warn_return_any = true
+warn_unused_ignores = true
+show_error_codes = true
+files = ['**/*.py']
+exclude = '(.*__init__\.py)'
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
