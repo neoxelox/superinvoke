@@ -49,8 +49,8 @@ def run(context, args):
 
 @task(
     help={
-        "include": "Tags or tool names that will be installed. Example: ops,golang-migrate...",
-        "exclude": "Tags or tool names that will be excluded. Example: golangci-lint,ci...",
+        "include": "Tags, all or tool names that will be installed. Example: ops,golang-migrate,all...",
+        "exclude": "Tags, all or tool names that will be excluded. Example: golangci-lint,ci...",
         "yes": "Automatically say yes to all prompts.",
     }
 )
@@ -62,8 +62,15 @@ def install(context, include, exclude="", yes=False):
 
     include_tools = set()
     for name_or_tag in include:
-        tool = __TOOLS__.ByName(name_or_tag)
+        if name_or_tag == "all":
+            for tool in __TOOLS__.All:
+                if not context.has(tool, version=tool.version):
+                    include_tools.add(tool)
+                else:
+                    context.info(f"{tool.name} already installed")
+            continue
 
+        tool = __TOOLS__.ByName(name_or_tag)
         if tool:
             if not context.has(tool, version=tool.version):
                 include_tools.add(tool)
@@ -86,8 +93,11 @@ def install(context, include, exclude="", yes=False):
 
     exclude_tools = set()
     for name_or_tag in exclude:
-        tool = __TOOLS__.ByName(name_or_tag)
+        if name_or_tag == "all":
+            exclude_tools.update(__TOOLS__.All)
+            continue
 
+        tool = __TOOLS__.ByName(name_or_tag)
         if tool:
             exclude_tools.add(tool)
             continue
@@ -143,8 +153,8 @@ def install(context, include, exclude="", yes=False):
 
 @task(
     help={
-        "include": "Tags or tool names that will be uninstalled. Example: ops,golang-migrate...",
-        "exclude": "Tags or tool names that will be excluded. Example: golangci-lint,ci...",
+        "include": "Tags, all or tool names that will be uninstalled. Example: ops,golang-migrate,all...",
+        "exclude": "Tags, all or tool names that will be excluded. Example: golangci-lint,ci...",
         "yes": "Automatically say yes to all prompts.",
     }
 )
@@ -158,8 +168,15 @@ def remove(context, include, exclude="", yes=False):
 
     include_tools = set()
     for name_or_tag in include:
-        tool = __TOOLS__.ByName(name_or_tag)
+        if name_or_tag == "all":
+            for tool in __TOOLS__.All:
+                if context.has(tool, version=tool.version):
+                    include_tools.add(tool)
+                else:
+                    context.info(f"{tool.name} not installed")
+            continue
 
+        tool = __TOOLS__.ByName(name_or_tag)
         if tool:
             if context.has(tool, version=tool.version):
                 include_tools.add(tool)
@@ -182,8 +199,11 @@ def remove(context, include, exclude="", yes=False):
 
     exclude_tools = set()
     for name_or_tag in exclude:
-        tool = __TOOLS__.ByName(name_or_tag)
+        if name_or_tag == "all":
+            exclude_tools.update(__TOOLS__.All)
+            continue
 
+        tool = __TOOLS__.ByName(name_or_tag)
         if tool:
             exclude_tools.add(tool)
             continue
