@@ -2,7 +2,14 @@
 name = "superinvoke"
 version = "0.1.0"
 description = "An Invoke wrapper with extra handy features."
+license = "MIT"
 authors = ["Alex <alex@neoxelox.com>"]
+maintainers = ["Alex <alex@neoxelox.com>"]
+readme = "README.md"
+homepage = "https://github.com/neoxelox/superinvoke"
+repository = "https://github.com/neoxelox/superinvoke"
+documentation = "https://github.com/neoxelox/superinvoke"
+keywords = ["plugin", "wrapper", "invoke", "pyinvoke", "superinvoke"]
 
 [tool.poetry.dependencies]
 python = ">=3.7,<4.0"
