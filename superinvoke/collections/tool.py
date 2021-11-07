@@ -1,3 +1,5 @@
+import os
+import stat
 import tempfile
 
 from invoke import task
@@ -146,6 +148,7 @@ def install(context, include, exclude="", yes=False):
                     else:
                         context.download(tool.link[0], utils.path(f"{TMP}/{tool.name}"))
                         context.move(utils.path(f"{TMP}/{tool.name}"), tool.path)
+                        os.chmod(tool.path, os.stat(tool.path).st_mode | stat.S_IEXEC)
 
                 if context.has(tool, version=tool.version):
                     context.print(f"Installed [cyan]{tool.name}[/cyan] ([bold green3]{tool.version}[/bold green3])")
