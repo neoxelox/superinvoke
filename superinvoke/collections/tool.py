@@ -139,9 +139,13 @@ def install(context, include, exclude="", yes=False):
                 with constants.console.status(
                     f"Installing [cyan]{tool.name}[/cyan] ([green3]{tool.version}[/green3])"
                 ) as _:
-                    context.download(tool.link[0], utils.path(f"{TMP}/{tool.name}.tar.gz"))
-                    context.extract(utils.path(f"{TMP}/{tool.name}.tar.gz"), utils.path(f"{TMP}/{tool.name}"))
-                    context.move(utils.path(f"{TMP}/{tool.name}/{tool.link[1]}"), tool.path)
+                    if tool.link[1] != ".":
+                        context.download(tool.link[0], utils.path(f"{TMP}/{tool.name}.tar.gz"))
+                        context.extract(utils.path(f"{TMP}/{tool.name}.tar.gz"), utils.path(f"{TMP}/{tool.name}"))
+                        context.move(utils.path(f"{TMP}/{tool.name}/{tool.link[1]}"), tool.path)
+                    else:
+                        context.download(tool.link[0], utils.path(f"{TMP}/{tool.name}"))
+                        context.move(utils.path(f"{TMP}/{tool.name}"), tool.path)
 
                 if context.has(tool, version=tool.version):
                     context.print(f"Installed [cyan]{tool.name}[/cyan] ([bold green3]{tool.version}[/bold green3])")
