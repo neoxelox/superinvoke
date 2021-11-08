@@ -167,8 +167,6 @@ def install(context, include, exclude="", yes=False):
 )
 def remove(context, include, exclude="", yes=False):
     """Remove available tools."""
-    print("remove tools")
-
     from ..main import __TOOLS__
 
     include = {tool for tool in include.split(",") if tool and tool != ","}
