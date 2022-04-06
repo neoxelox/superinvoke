@@ -134,7 +134,7 @@ def install(context, include, exclude="", yes=False):
 
     with tempfile.TemporaryDirectory() as TMP:
         TMP = utils.path(TMP)
-        context.create(utils.path(constants.Directories.TOOLS), dir=True)
+        context.create(utils.path(constants.Paths.TOOLS), dir=True)
 
         for tool in tools:
             if not context.has(tool, version=tool.version):

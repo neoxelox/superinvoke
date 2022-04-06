@@ -1,12 +1,9 @@
-import os
-import shutil
 import sys
-from typing import List, Optional
+from typing import List, Literal, Optional
 
-from download import download as fetch
 from invoke.context import Context
 
-from .. import constants
+from .. import constants, utils
 
 
 # Writes to stdout and flushes.
@@ -97,40 +94,47 @@ def changes(context: Context, scope: int = 1) -> List[str]:
 #               FILE    DIR
 # - copy
 # - move        X       X
-# - create              X
+# - create      X       X
 # - remove
-# - read
+# - read        X       -
 # - write
+# - exists      X       X
 # - extract     X       X
 # - download    X       X
 
 # Creates a file or a directory in the specified path.
 def create(context: Context, path: str, data: List[str] = [""], dir: bool = False) -> None:
-    if dir:
-        os.makedirs(str(path), exist_ok=True)
+    utils.create(path, data, dir=dir)
+
+
+# Reads a file in the specified path.
+def read(context: Context, path: str) -> List[str]:
+    return utils.read(path)
+
+
+# Checks if the specified path exists and whether it is a file or a directory.
+def exists(context: Context, path: str) -> Optional[Literal["file", "dir"]]:
+    return utils.exists(path)
 
 
 # Moves a file or a directory to the specified path.
 def move(context: Context, source_path: str, dest_path: str) -> None:
-    shutil.move(str(source_path), str(dest_path))
+    utils.move(source_path, dest_path)
 
 
 # Removes a file or a directory in the specified path.
 def remove(context: Context, path: str, dir: bool = False) -> None:
-    if dir:
-        shutil.rmtree(str(path))
-    else:
-        os.remove(str(path))
+    utils.remove(path, dir=dir)
 
 
 # Extracts a zip, tar, gztar, bztar, or xztar file in the specified path.
 def extract(context: Context, source_path: str, dest_path: str) -> None:
-    shutil.unpack_archive(str(source_path), str(dest_path))
+    utils.extract(source_path, dest_path)
 
 
 # Downloads a file to the specified path.
 def download(context: Context, url: str, path: str) -> None:
-    fetch(str(url), str(path), progressbar=False, replace=True, verbose=False)
+    utils.download(url, path)
 
 
 # Extends Pyinvoke's Context methods.
@@ -148,6 +152,8 @@ def init() -> None:
     Context.branch = branch
     Context.changes = changes
     Context.create = create
+    Context.read = read
+    Context.exists = exists
     Context.move = move
     Context.remove = remove
     Context.extract = extract

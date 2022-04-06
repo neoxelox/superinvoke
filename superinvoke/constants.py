@@ -6,6 +6,7 @@ from . import utils
 
 
 # Different OS Platforms.
+# TODO: Add architechtures.
 class Platforms(utils.StrEnum):
     LINUX = "linux"
     WINDOWS = "win32"
@@ -16,13 +17,17 @@ class Platforms(utils.StrEnum):
         return Platforms(sys.platform)
 
 
-# Different superinvoke directories.
-class Directories(utils.StrEnum):
+# Different superinvoke paths.
+class Paths(utils.StrEnum):
     CACHE = ".superinvoke_cache"
 
     @utils.classproperty
     def TOOLS(cls):
-        return f"{Directories.CACHE}/tools"
+        return f"{Paths.CACHE}/tools"
+
+    @utils.classproperty
+    def ENV(cls):
+        return f"{Paths.CACHE}/env"
 
 
 # Global console instance.

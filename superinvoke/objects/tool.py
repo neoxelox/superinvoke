@@ -1,11 +1,7 @@
 from typing import List, Optional
 
 from .. import constants, utils
-
-
-# Represents a tool tag.
-class Tags(utils.StrEnum):
-    pass
+from .common import Tags
 
 
 # Represents an executable tool.
@@ -20,7 +16,7 @@ class Tool:
         self.name = name
         self.version = version
         self.tags = tags
-        self.path = utils.path(f"{constants.Directories.TOOLS}/{self.name}")
+        self.path = utils.path(f"{constants.Paths.TOOLS}/{self.name}")
         self.links = links
 
     def __str__(self) -> str:
@@ -31,7 +27,11 @@ class Tool:
         return self.links.get(constants.Platforms.CURRENT, constants.Platforms.LINUX)
 
     def __eq__(self, other: object) -> bool:
-        return self.name == other.name and self.version == other.version
+        return (
+            isinstance(other, Tool)
+            and self.name == other.name
+            and self.version == other.version
+        )
 
     def __hash__(self) -> int:
         return hash((self.name, self.version))
