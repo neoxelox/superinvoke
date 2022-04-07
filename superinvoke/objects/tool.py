@@ -30,7 +30,7 @@ class Tool:
         if path is None:
             self.path = utils.path(f"{constants.Paths.TOOLS}/{self.name}")
         else:
-            self.path = utils.path(str(path))
+            self.path = str(path)
             self._managed = False
 
     def __str__(self) -> str:
