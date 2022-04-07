@@ -11,27 +11,45 @@ class Tool:
     tags: List[Tags]
     path: str
     links: dict
+    _managed: bool
 
-    def __init__(self, name: str, version: Optional[str], tags: List[Tags], links: dict):
+    def __init__(
+        self,
+        name: str,
+        version: Optional[str],
+        tags: List[Tags],
+        links: Optional[dict] = {},
+        path: Optional[str] = None,
+    ):
         self.name = name
         self.version = version
         self.tags = tags
-        self.path = utils.path(f"{constants.Paths.TOOLS}/{self.name}")
         self.links = links
+        self._managed = True
+
+        if path is None:
+            self.path = utils.path(f"{constants.Paths.TOOLS}/{self.name}")
+        else:
+            self.path = utils.path(str(path))
+            self._managed = False
 
     def __str__(self) -> str:
         return self.path
 
     @property
     def link(self) -> tuple:
-        return self.links.get(constants.Platforms.CURRENT, constants.Platforms.LINUX)
+        current_link = self.links.get(constants.Platforms.CURRENT, None)
+        if current_link:
+            return current_link
+
+        default_link = self.links.get(constants.Platforms.LINUX, None)
+        if default_link:
+            return default_link
+
+        return None
 
     def __eq__(self, other: object) -> bool:
-        return (
-            isinstance(other, Tool)
-            and self.name == other.name
-            and self.version == other.version
-        )
+        return isinstance(other, Tool) and self.name == other.name and self.version == other.version
 
     def __hash__(self) -> int:
         return hash((self.name, self.version))

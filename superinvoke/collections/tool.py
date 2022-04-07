@@ -66,27 +66,36 @@ def install(context, include, exclude="", yes=False):
     for name_or_tag in include:
         if name_or_tag == "all":
             for tool in __TOOLS__.All:
-                if not context.has(tool, version=tool.version):
-                    include_tools.add(tool)
+                if tool._managed:
+                    if not context.has(tool, version=tool.version):
+                        include_tools.add(tool)
+                    else:
+                        context.info(f"{tool.name} already installed")
                 else:
-                    context.info(f"{tool.name} already installed")
+                    context.info(f"{tool.name} not managed")
             continue
 
         tool = __TOOLS__.ByName(name_or_tag)
         if tool:
-            if not context.has(tool, version=tool.version):
-                include_tools.add(tool)
-            else:
-                context.info(f"{tool.name} already installed")
-            continue
-
-        tools = __TOOLS__.ByTag(name_or_tag)
-        if tools:
-            for tool in tools:
+            if tool._managed:
                 if not context.has(tool, version=tool.version):
                     include_tools.add(tool)
                 else:
                     context.info(f"{tool.name} already installed")
+                continue
+            else:
+                context.info(f"{tool.name} not managed")
+
+        tools = __TOOLS__.ByTag(name_or_tag)
+        if tools:
+            for tool in tools:
+                if tool._managed:
+                    if not context.has(tool, version=tool.version):
+                        include_tools.add(tool)
+                    else:
+                        context.info(f"{tool.name} already installed")
+                else:
+                    context.info(f"{tool.name} not managed")
             continue
 
         context.warn(f"Ignoring {name_or_tag}")
@@ -141,7 +150,9 @@ def install(context, include, exclude="", yes=False):
                 with constants.console.status(
                     f"Installing [cyan]{tool.name}[/cyan] ([green3]{tool.version}[/green3])"
                 ) as _:
-                    if tool.link[1] != ".":
+                    if tool.link is None:
+                        context.fail(f"No links set for {tool.name}")
+                    elif tool.link[1] != ".":
                         context.download(tool.link[0], utils.path(f"{TMP}/{tool.name}.tar.gz"))
                         context.extract(utils.path(f"{TMP}/{tool.name}.tar.gz"), utils.path(f"{TMP}/{tool.name}"))
                         context.move(utils.path(f"{TMP}/{tool.name}/{tool.link[1]}"), tool.path)
@@ -175,27 +186,36 @@ def remove(context, include, exclude="", yes=False):
     for name_or_tag in include:
         if name_or_tag == "all":
             for tool in __TOOLS__.All:
-                if context.has(tool, version=tool.version):
-                    include_tools.add(tool)
+                if tool._managed:
+                    if context.has(tool, version=tool.version):
+                        include_tools.add(tool)
+                    else:
+                        context.info(f"{tool.name} not installed")
                 else:
-                    context.info(f"{tool.name} not installed")
+                    context.info(f"{tool.name} not managed")
             continue
 
         tool = __TOOLS__.ByName(name_or_tag)
         if tool:
-            if context.has(tool, version=tool.version):
-                include_tools.add(tool)
+            if tool._managed:
+                if context.has(tool, version=tool.version):
+                    include_tools.add(tool)
+                else:
+                    context.info(f"{tool.name} not installed")
             else:
-                context.info(f"{tool.name} not installed")
+                context.info(f"{tool.name} not managed")
             continue
 
         tools = __TOOLS__.ByTag(name_or_tag)
         if tools:
             for tool in tools:
-                if context.has(tool, version=tool.version):
-                    include_tools.add(tool)
+                if tool._managed:
+                    if context.has(tool, version=tool.version):
+                        include_tools.add(tool)
+                    else:
+                        context.info(f"{tool.name} not installed")
                 else:
-                    context.info(f"{tool.name} not installed")
+                    context.info(f"{tool.name} not managed")
             continue
 
         context.warn(f"Ignoring {name_or_tag}")
