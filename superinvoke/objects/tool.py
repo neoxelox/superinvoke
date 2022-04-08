@@ -73,7 +73,7 @@ class Tools:
 
     @classmethod
     def ByTag(cls, tag) -> List[Tool]:
-        return [tool for tool in cls.All if tag in tool.tags]
+        return [tool for tool in cls.All if tag in tool.tags or Tags.ALL in tool.tags]
 
     @classmethod
     def ByName(cls, name) -> Optional[Tool]:

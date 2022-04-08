@@ -57,7 +57,7 @@ class Envs:
 
     @classmethod
     def ByTag(cls, tag) -> List[Env]:
-        return [env for env in cls.All if tag in env.tags]
+        return [env for env in cls.All if tag in env.tags or Tags.ALL in env.tags]
 
     @classmethod
     def ByName(cls, name) -> Optional[Env]:
