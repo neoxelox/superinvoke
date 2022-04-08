@@ -1,3 +1,4 @@
+import os
 import sys
 from typing import List, Literal, Optional
 
@@ -95,7 +96,7 @@ def changes(context: Context, scope: int = 1) -> List[str]:
 # - copy
 # - move        X       X
 # - create      X       X
-# - remove
+# - remove      X       X
 # - read        X       -
 # - write
 # - exists      X       X
@@ -104,37 +105,83 @@ def changes(context: Context, scope: int = 1) -> List[str]:
 
 # Creates a file or a directory in the specified path.
 def create(context: Context, path: str, data: List[str] = [""], dir: bool = False) -> None:
+    prev_cwd = os.getcwd()
+    if context.cwd:
+        os.chdir(context.cwd)
+
     utils.create(path, data, dir=dir)
+
+    os.chdir(prev_cwd)
 
 
 # Reads a file in the specified path.
 def read(context: Context, path: str) -> List[str]:
-    return utils.read(path)
+    prev_cwd = os.getcwd()
+    if context.cwd:
+        os.chdir(context.cwd)
+
+    result = utils.read(path)
+
+    os.chdir(prev_cwd)
+
+    return result
 
 
 # Checks if the specified path exists and whether it is a file or a directory.
 def exists(context: Context, path: str) -> Optional[Literal["file", "dir"]]:
-    return utils.exists(path)
+    prev_cwd = os.getcwd()
+    if context.cwd:
+        os.chdir(context.cwd)
+
+    result = utils.exists(path)
+
+    os.chdir(prev_cwd)
+
+    return result
 
 
 # Moves a file or a directory to the specified path.
 def move(context: Context, source_path: str, dest_path: str) -> None:
+    prev_cwd = os.getcwd()
+    if context.cwd:
+        os.chdir(context.cwd)
+
     utils.move(source_path, dest_path)
+
+    os.chdir(prev_cwd)
 
 
 # Removes a file or a directory in the specified path.
 def remove(context: Context, path: str, dir: bool = False) -> None:
+    prev_cwd = os.getcwd()
+    if context.cwd:
+        os.chdir(context.cwd)
+
     utils.remove(path, dir=dir)
+
+    os.chdir(prev_cwd)
 
 
 # Extracts a zip, tar, gztar, bztar, or xztar file in the specified path.
 def extract(context: Context, source_path: str, dest_path: str) -> None:
+    prev_cwd = os.getcwd()
+    if context.cwd:
+        os.chdir(context.cwd)
+
     utils.extract(source_path, dest_path)
+
+    os.chdir(prev_cwd)
 
 
 # Downloads a file to the specified path.
 def download(context: Context, url: str, path: str) -> None:
+    prev_cwd = os.getcwd()
+    if context.cwd:
+        os.chdir(context.cwd)
+
     utils.download(url, path)
+
+    os.chdir(prev_cwd)
 
 
 # Extends Pyinvoke's Context methods.
