@@ -37,6 +37,9 @@ def create(path: str, data: List[str] = [""], dir: bool = False) -> None:
     if dir:
         os.makedirs(str(path), exist_ok=True)
     else:
+        dirs = os.path.dirname(str(path))
+        if dirs:
+            os.makedirs(dirs, exist_ok=True)
         data = [str(line) + "\n" for line in data]
         with open(str(path), "w") as f:
             f.writelines(data)
