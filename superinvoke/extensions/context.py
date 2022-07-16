@@ -86,10 +86,17 @@ def branch(context: Context) -> str:
     return context.attempt("git rev-parse --abbrev-ref HEAD")
 
 
-# Gets the current commit tag if any.
-def tag(context: Context) -> Optional[str]:
-    result = context.attempt("git name-rev --name-only --tags HEAD").replace("^0", "")
-    return result if result != "undefined" else None
+# Gets the current or latest commit tag if any.
+def tag(context: Context, current: bool = True) -> Optional[str]:
+    if current:
+        result = context.attempt("git name-rev --name-only --tags HEAD").replace("^0", "")
+    else:
+        result = context.attempt("git describe --tags --abbrev=0").replace("^0", "")
+
+    if "undefined" in result or "fatal" in result:
+        result = None
+
+    return result
 
 
 # Gets the N last changes.
