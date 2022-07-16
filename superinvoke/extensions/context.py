@@ -86,6 +86,12 @@ def branch(context: Context) -> str:
     return context.attempt("git rev-parse --abbrev-ref HEAD")
 
 
+# Gets the current commit tag if any.
+def tag(context: Context) -> Optional[str]:
+    result = context.attempt("git name-rev --name-only --tags HEAD")
+    return result if result != "undefined" else None
+
+
 # Gets the N last changes.
 def changes(context: Context, scope: int = 1) -> List[str]:
     return context.attempt(f"git diff --name-only HEAD HEAD~{scope}").split("\n")
@@ -197,6 +203,7 @@ def init() -> None:
     Context.repository = repository
     Context.commit = commit
     Context.branch = branch
+    Context.tag = tag
     Context.changes = changes
     Context.create = create
     Context.read = read
