@@ -88,7 +88,7 @@ def branch(context: Context) -> str:
 
 # Gets the current commit tag if any.
 def tag(context: Context) -> Optional[str]:
-    result = context.attempt("git name-rev --name-only --tags HEAD")
+    result = context.attempt("git name-rev --name-only --tags HEAD").replace("^0", "")
     return result if result != "undefined" else None
 
 
