@@ -3,6 +3,7 @@ __version__ = ".".join(map(str, __version_info__))
 
 
 import invoke
+import rich
 
 from . import utils
 from .constants import Paths, Platforms, console

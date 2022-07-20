@@ -13,7 +13,7 @@ keywords = ["plugin", "wrapper", "invoke", "pyinvoke", "superinvoke"]
 
 [tool.poetry.dependencies]
 python = ">=3.7,<4.0"
-rich = "10.7.0"
+rich = "12.5.1"
 invoke = { git = "https://github.com/neoxelox/invoke.git" }
 download = "^0.3.5"
 
