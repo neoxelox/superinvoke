@@ -93,7 +93,7 @@ def tag(context: Context, current: bool = True) -> Optional[str]:
     else:
         result = context.attempt("git describe --tags --abbrev=0").replace("^0", "")
 
-    if "undefined" in result or "fatal" in result:
+    if not result or "undefined" in result or "fatal" in result:
         result = None
 
     return result
