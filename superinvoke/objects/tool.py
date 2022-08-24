@@ -1,3 +1,4 @@
+import fnmatch
 from typing import List, Optional
 
 from .. import constants, utils
@@ -72,13 +73,9 @@ class Tools:
         return all
 
     @classmethod
-    def ByTag(cls, tag) -> List[Tool]:
-        return [tool for tool in cls.All if tag in tool.tags or Tags.ALL in tool.tags]
+    def ByTag(cls, tag: str) -> List[Tool]:
+        return [tool for tool in cls.All if fnmatch.filter(tool.tags, tag) or Tags.ALL in tool.tags]
 
     @classmethod
-    def ByName(cls, name) -> Optional[Tool]:
-        for tool in cls.All:
-            if name == tool.name:
-                return tool
-
-        return None
+    def ByName(cls, name: str) -> List[Tool]:
+        return [tool for tool in cls.All if fnmatch.filter([tool.name], name)]

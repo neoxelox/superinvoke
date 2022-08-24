@@ -5,4 +5,4 @@ from .. import utils
 class Tags(utils.StrEnum):
     @utils.classproperty
     def ALL(cls):
-        return "all"
+        return "*"

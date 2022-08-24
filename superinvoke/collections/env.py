@@ -39,14 +39,15 @@ def switch(context, environment):
 
     if not new_env:
         context.fail(f"{environment} is not a valid environment")
+    new_env = new_env[0]
 
     if new_env == old_env:
-        context.info(f"{environment} is already the current environment")
+        context.info(f"{new_env} is already the current environment")
         return
 
     context.create(utils.path(constants.Paths.ENV), data=[new_env], dir=False)
 
     if new_env != __ENVS__.Current:
-        context.fail(f"Cannot switch to environment {environment}")
+        context.fail(f"Cannot switch to environment {new_env}")
 
     context.print(f"Switched to environment [green3]{new_env}[/green3] from {old_env}")

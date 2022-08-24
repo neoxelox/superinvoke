@@ -38,11 +38,12 @@ def run(context, args):
     """Execute an available tool."""
     from ..main import __TOOLS__
 
-    tool, args = utils.next_arg(args)
-    tool = __TOOLS__.ByName(tool)
+    tool_name, args = utils.next_arg(args)
+    tool = __TOOLS__.ByName(tool_name)
 
     if not tool:
-        context.fail("Unknown tool")
+        context.fail(f"{tool_name} is not a valid tool")
+    tool = tool[0]
 
     install(context, include=tool.name, exclude="", yes=False)
 
@@ -51,8 +52,8 @@ def run(context, args):
 
 @task(
     help={
-        "include": "Tags, all or tool names that will be installed. Example: ops,golang-migrate,all...",
-        "exclude": "Tags, all or tool names that will be excluded. Example: golangci-lint,ci...",
+        "include": "Tags, globs or tool names that will be installed. Example: ops,golang-migrate,*...",
+        "exclude": "Tags, globs or tool names that will be excluded. Example: golangci-lint,ci,dev*...",
         "yes": "Automatically say yes to all prompts.",
     }
 )
@@ -61,68 +62,29 @@ def install(context, include, exclude="", yes=False):
     from ..main import __TOOLS__
 
     include = {tool for tool in include.split(",") if tool and tool != ","}
-
     include_tools = set()
     for name_or_tag in include:
-        if name_or_tag == "all":
-            for tool in __TOOLS__.All:
-                if tool._managed:
-                    if not context.has(tool, version=tool.version):
-                        include_tools.add(tool)
-                    else:
-                        context.info(f"{tool.name} already installed")
-                else:
-                    context.info(f"{tool.name} not managed")
-            continue
-
-        tool = __TOOLS__.ByName(name_or_tag)
-        if tool:
-            if tool._managed:
-                if not context.has(tool, version=tool.version):
-                    include_tools.add(tool)
-                else:
-                    context.info(f"{tool.name} already installed")
-                continue
-            else:
-                context.info(f"{tool.name} not managed")
-
-        tools = __TOOLS__.ByTag(name_or_tag)
-        if tools:
-            for tool in tools:
-                if tool._managed:
-                    if not context.has(tool, version=tool.version):
-                        include_tools.add(tool)
-                    else:
-                        context.info(f"{tool.name} already installed")
-                else:
-                    context.info(f"{tool.name} not managed")
-            continue
-
-        context.warn(f"Ignoring {name_or_tag}")
+        include_tools.update(__TOOLS__.ByName(name_or_tag))
+        include_tools.update(__TOOLS__.ByTag(name_or_tag))
 
     exclude = {tool for tool in exclude.split(",") if tool and tool != ","}
-
     exclude_tools = set()
     for name_or_tag in exclude:
-        if name_or_tag == "all":
-            exclude_tools.update(__TOOLS__.All)
-            continue
+        exclude_tools.update(__TOOLS__.ByName(name_or_tag))
+        exclude_tools.update(__TOOLS__.ByTag(name_or_tag))
 
-        tool = __TOOLS__.ByName(name_or_tag)
-        if tool:
-            exclude_tools.add(tool)
-            continue
-
-        tools = __TOOLS__.ByTag(name_or_tag)
-        if tools:
-            exclude_tools.update(tools)
-            continue
-
-        context.warn(f"Ignoring {name_or_tag}")
-
-    tools = include_tools - exclude_tools
+    tools = set()
+    for tool in include_tools - exclude_tools:
+        if tool._managed:
+            if not context.has(tool, version=tool.version):
+                tools.add(tool)
+            else:
+                context.info(f"{tool.name} already installed")
+        else:
+            context.info(f"{tool.name} not managed")
 
     if not tools:
+        context.warn("No tools matched")
         return
 
     context.info(f"Tool(s) {', '.join([tool.name for tool in tools])} will be [bold green3]installed[/bold green3]")
@@ -171,8 +133,8 @@ def install(context, include, exclude="", yes=False):
 
 @task(
     help={
-        "include": "Tags, all or tool names that will be uninstalled. Example: ops,golang-migrate,all...",
-        "exclude": "Tags, all or tool names that will be excluded. Example: golangci-lint,ci...",
+        "include": "Tags, globs or tool names that will be uninstalled. Example: ops,golang-migrate,*...",
+        "exclude": "Tags, globs or tool names that will be excluded. Example: golangci-lint,ci,dev*...",
         "yes": "Automatically say yes to all prompts.",
     }
 )
@@ -181,68 +143,29 @@ def remove(context, include, exclude="", yes=False):
     from ..main import __TOOLS__
 
     include = {tool for tool in include.split(",") if tool and tool != ","}
-
     include_tools = set()
     for name_or_tag in include:
-        if name_or_tag == "all":
-            for tool in __TOOLS__.All:
-                if tool._managed:
-                    if context.has(tool, version=tool.version):
-                        include_tools.add(tool)
-                    else:
-                        context.info(f"{tool.name} not installed")
-                else:
-                    context.info(f"{tool.name} not managed")
-            continue
-
-        tool = __TOOLS__.ByName(name_or_tag)
-        if tool:
-            if tool._managed:
-                if context.has(tool, version=tool.version):
-                    include_tools.add(tool)
-                else:
-                    context.info(f"{tool.name} not installed")
-            else:
-                context.info(f"{tool.name} not managed")
-            continue
-
-        tools = __TOOLS__.ByTag(name_or_tag)
-        if tools:
-            for tool in tools:
-                if tool._managed:
-                    if context.has(tool, version=tool.version):
-                        include_tools.add(tool)
-                    else:
-                        context.info(f"{tool.name} not installed")
-                else:
-                    context.info(f"{tool.name} not managed")
-            continue
-
-        context.warn(f"Ignoring {name_or_tag}")
+        include_tools.update(__TOOLS__.ByName(name_or_tag))
+        include_tools.update(__TOOLS__.ByTag(name_or_tag))
 
     exclude = {tool for tool in exclude.split(",") if tool and tool != ","}
-
     exclude_tools = set()
     for name_or_tag in exclude:
-        if name_or_tag == "all":
-            exclude_tools.update(__TOOLS__.All)
-            continue
+        exclude_tools.update(__TOOLS__.ByName(name_or_tag))
+        exclude_tools.update(__TOOLS__.ByTag(name_or_tag))
 
-        tool = __TOOLS__.ByName(name_or_tag)
-        if tool:
-            exclude_tools.add(tool)
-            continue
-
-        tools = __TOOLS__.ByTag(name_or_tag)
-        if tools:
-            exclude_tools.update(tools)
-            continue
-
-        context.warn(f"Ignoring {name_or_tag}")
-
-    tools = include_tools - exclude_tools
+    tools = set()
+    for tool in include_tools - exclude_tools:
+        if tool._managed:
+            if context.has(tool, version=tool.version):
+                tools.add(tool)
+            else:
+                context.info(f"{tool.name} not installed")
+        else:
+            context.info(f"{tool.name} not managed")
 
     if not tools:
+        context.warn("No tools matched")
         return
 
     context.info(f"Tool(s) {', '.join([tool.name for tool in tools])} will be [bold red1]uninstalled[/bold red1]")

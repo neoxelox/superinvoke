@@ -1,3 +1,4 @@
+import fnmatch
 from typing import Any, Callable, List, Optional
 
 from .. import constants, utils
@@ -48,7 +49,8 @@ class Envs:
     @utils.classproperty
     def Current(cls) -> Optional[Env]:
         if utils.exists(utils.path(constants.Paths.ENV)) == "file":
-            return cls.ByName(utils.read(utils.path(constants.Paths.ENV))[0])
+            env = cls.ByName(utils.read(utils.path(constants.Paths.ENV))[0])
+            return env[0] if env else None
 
         if hasattr(cls, "Default") and cls.Default is not None:
             return cls.Default(cls)
@@ -56,13 +58,9 @@ class Envs:
         return None
 
     @classmethod
-    def ByTag(cls, tag) -> List[Env]:
-        return [env for env in cls.All if tag in env.tags or Tags.ALL in env.tags]
+    def ByTag(cls, tag: str) -> List[Env]:
+        return [env for env in cls.All if fnmatch.filter(env.tags, tag) or Tags.ALL in env.tags]
 
     @classmethod
-    def ByName(cls, name) -> Optional[Env]:
-        for env in cls.All:
-            if name == env.name:
-                return env
-
-        return None
+    def ByName(cls, name: str) -> List[Env]:
+        return [env for env in cls.All if fnmatch.filter([env.name], name)]
