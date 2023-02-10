@@ -17,7 +17,7 @@ def input(message: str) -> str:
     return constants.console.input(f"[default on default][not bold]{message}[/not bold][/default on default]")
 
 
-# Terminates the current task immediately with error.
+# Terminates the current task immediately with an error.
 def fail(message: Optional[str] = None) -> None:
     if message:
         constants.console.print(
@@ -52,6 +52,7 @@ def warn(message: str) -> None:
 # Runs the specified command hiding its output, continuing if fails and returns stdout or stderr.
 def attempt(context: Context, command: str) -> str:
     try:
+        # TODO: If input is required fail directly
         result = context.run(command, warn=True, hide="both")
     except Exception:
         return ""

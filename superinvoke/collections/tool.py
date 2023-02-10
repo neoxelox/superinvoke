@@ -8,6 +8,11 @@ from rich.table import Table
 from .. import constants, utils
 
 
+def has_tool_version(context, tool):
+    with constants.console.status(f"Gathering [cyan]{tool.name}[/cyan] version"):
+        return context.has(tool, version=tool.version)
+
+
 @task(default=True)
 def list(context):
     """List available tools."""
@@ -22,7 +27,7 @@ def list(context):
         table.add_row(
             tool.name,
             f"[bold green3]{tool.version}[/bold green3]"
-            if context.has(tool, version=tool.version)
+            if has_tool_version(context, tool)
             else f"[bold red1]{tool.version}[/bold red1]",
             ", ".join(tool.tags),
         )
@@ -76,7 +81,7 @@ def install(context, include, exclude="", yes=False):
     tools = set()
     for tool in include_tools - exclude_tools:
         if tool._managed:
-            if not context.has(tool, version=tool.version):
+            if not has_tool_version(context, tool):
                 tools.add(tool)
             else:
                 context.info(f"{tool.name} already installed")
@@ -84,7 +89,7 @@ def install(context, include, exclude="", yes=False):
             context.info(f"{tool.name} not managed")
 
     if not tools:
-        context.warn("No tools matched")
+        context.warn("No tools to install")
         return
 
     context.info(f"Tool(s) {', '.join([tool.name for tool in tools])} will be [bold green3]installed[/bold green3]")
@@ -108,7 +113,7 @@ def install(context, include, exclude="", yes=False):
         context.create(utils.path(constants.Paths.TOOLS), dir=True)
 
         for tool in tools:
-            if not context.has(tool, version=tool.version):
+            if not has_tool_version(context, tool):
                 with constants.console.status(
                     f"Installing [cyan]{tool.name}[/cyan] ([green3]{tool.version}[/green3])"
                 ) as _:
@@ -123,7 +128,7 @@ def install(context, include, exclude="", yes=False):
                         context.move(utils.path(f"{TMP}/{tool.name}"), tool.path)
                         os.chmod(tool.path, os.stat(tool.path).st_mode | stat.S_IEXEC)
 
-                if context.has(tool, version=tool.version):
+                if has_tool_version(context, tool):
                     context.print(f"Installed [cyan]{tool.name}[/cyan] ([bold green3]{tool.version}[/bold green3])")
                 else:
                     context.fail(f"Cannot install tool {tool.name}")
@@ -157,7 +162,7 @@ def remove(context, include, exclude="", yes=False):
     tools = set()
     for tool in include_tools - exclude_tools:
         if tool._managed:
-            if context.has(tool, version=tool.version):
+            if has_tool_version(context, tool):
                 tools.add(tool)
             else:
                 context.info(f"{tool.name} not installed")
@@ -165,7 +170,7 @@ def remove(context, include, exclude="", yes=False):
             context.info(f"{tool.name} not managed")
 
     if not tools:
-        context.warn("No tools matched")
+        context.warn("No tools to remove")
         return
 
     context.info(f"Tool(s) {', '.join([tool.name for tool in tools])} will be [bold red1]uninstalled[/bold red1]")
@@ -185,11 +190,11 @@ def remove(context, include, exclude="", yes=False):
         context.exit()
 
     for tool in tools:
-        if context.has(tool, version=tool.version):
+        if has_tool_version(context, tool):
             with constants.console.status(f"Uninstalling [cyan]{tool.name}[/cyan] ([red1]{tool.version}[/red1])") as _:
                 context.remove(tool)
 
-            if not context.has(tool, version=tool.version):
+            if not has_tool_version(context, tool):
                 context.print(f"Uninstalled [cyan]{tool.name}[/cyan] ([bold red1]{tool.version}[/bold red1])")
             else:
                 context.fail(f"Cannot uninstall tool {tool.name}")
