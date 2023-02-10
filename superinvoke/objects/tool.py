@@ -19,7 +19,7 @@ class Tool:
         name: str,
         version: Optional[str],
         tags: List[Tags],
-        links: Optional[dict] = {},
+        links: dict = {},
         path: Optional[str] = None,
     ):
         self.name = name
@@ -38,16 +38,8 @@ class Tool:
         return self.path
 
     @property
-    def link(self) -> tuple:
-        current_link = self.links.get(constants.Platforms.CURRENT, None)
-        if current_link:
-            return current_link
-
-        default_link = self.links.get(constants.Platforms.LINUX, None)
-        if default_link:
-            return default_link
-
-        return None
+    def link(self) -> Optional[tuple]:
+        return self.links.get(constants.Platforms.CURRENT, None)
 
     def __eq__(self, other: object) -> bool:
         return isinstance(other, Tool) and self.name == other.name and self.version == other.version

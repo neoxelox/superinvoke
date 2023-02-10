@@ -14,7 +14,10 @@ class Platforms(utils.StrEnum):
 
     @utils.classproperty
     def CURRENT(cls):
-        return Platforms(sys.platform)
+        try:
+            return Platforms(sys.platform)
+        except ValueError:
+            return Platforms.LINUX
 
 
 # Different superinvoke paths.
