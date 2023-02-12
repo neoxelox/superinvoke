@@ -53,7 +53,7 @@ def warn(message: str) -> None:
 def attempt(context: Context, command: str) -> str:
     try:
         # TODO: If input is required fail directly
-        result = context.run(command, warn=True, hide="both")
+        result = context.run(command, warn=True, hide="both", pty=False)
     except Exception:
         return ""
 
@@ -100,7 +100,7 @@ def tag(context: Context, current: bool = True) -> Optional[str]:
     return result
 
 
-# Gets the N last changes.
+# Gets the N last file changed.
 def changes(context: Context, scope: int = 1) -> List[str]:
     return context.attempt(f"git diff --name-only HEAD HEAD~{scope}").split("\n")
 
