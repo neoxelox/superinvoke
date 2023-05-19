@@ -21,7 +21,7 @@ def init(tools: Optional[objects.Tools] = None, envs: Optional[objects.Envs] = N
 
     # Root collection
     root = Collection()
-    root.configure({
+    root.configure({  # noqa: BLK100
         "run": {
             "shell": os.environ.get("COMSPEC", os.environ.get("SHELL")),
             "encoding": "utf-8"

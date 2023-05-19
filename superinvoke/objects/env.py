@@ -18,11 +18,7 @@ class Env:
         return self.name
 
     def __eq__(self, other: object) -> bool:
-        return (
-            isinstance(other, Env)
-            and self.name == other.name
-            and self.tags == other.tags
-        )
+        return isinstance(other, Env) and self.name == other.name and self.tags == other.tags
 
     def __hash__(self) -> int:
         return hash((self.name, tuple(self.tags)))

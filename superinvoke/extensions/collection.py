@@ -1,1 +1,1 @@
-from invoke import Collection
+from invoke import Collection  # noqa: F401
