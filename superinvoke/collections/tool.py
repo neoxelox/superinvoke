@@ -120,8 +120,9 @@ def install(context, include, exclude="", yes=False):
                     if tool.link is None:
                         context.fail(f"No link set for {tool.name} in platform {constants.Platforms.CURRENT}")
                     elif tool.link[1] != ".":
-                        context.download(tool.link[0], utils.path(f"{TMP}/{tool.name}.tar.gz"))
-                        context.extract(utils.path(f"{TMP}/{tool.name}.tar.gz"), utils.path(f"{TMP}/{tool.name}"))
+                        tool_file = tool.link[0].split("/")[-1]
+                        context.download(tool.link[0], utils.path(f"{TMP}/{tool_file}"))
+                        context.extract(utils.path(f"{TMP}/{tool_file}"), utils.path(f"{TMP}/{tool.name}"))
                         context.move(utils.path(f"{TMP}/{tool.name}/{tool.link[1]}"), tool.path)
                     else:
                         context.download(tool.link[0], utils.path(f"{TMP}/{tool.name}"))
