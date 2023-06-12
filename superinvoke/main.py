@@ -28,6 +28,7 @@ def init(tools: Optional[objects.Tools] = None, envs: Optional[objects.Envs] = N
         }
     })
     root.add_task(collections.misc.help)
+    root.add_task(collections.misc.version)
 
     if tools:
         # Tool collection

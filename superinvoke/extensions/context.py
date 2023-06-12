@@ -1,3 +1,4 @@
+import fnmatch
 import os
 import sys
 from typing import List, Literal, Optional
@@ -66,7 +67,11 @@ def attempt(context: Context, command: str) -> str:
 # Checks whether a certain version of a program is installed.
 def has(context: Context, program: str, version: Optional[str] = None) -> bool:
     if version:
-        return version in context.attempt(f"{program} --version") or version in context.attempt(f"{program} version")
+        version = f"*{version}*"
+        return (  # noqa: BLK100
+            fnmatch.fnmatchcase(context.attempt(f"{program} --version"), version)
+            or fnmatch.fnmatchcase(context.attempt(f"{program} version"), version)
+        )
     else:
         result = context.attempt(f"which {program}")
         return result and "not found" not in result
