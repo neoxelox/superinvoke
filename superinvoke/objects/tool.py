@@ -30,6 +30,10 @@ class Tool:
 
         if path is None:
             self.path = utils.path(f"{constants.Paths.TOOLS}/{self.name}")
+
+            # Windows executables have to end with .exe
+            if constants.Platforms.CURRENT == constants.Platforms.WINDOWS:
+                self.path += ".exe"
         else:
             self.path = str(path)
             self._managed = False
