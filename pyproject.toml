@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "superinvoke"
-version = "1.0.2"
+version = "1.0.3"
 description = "An Invoke wrapper with extra handy features."
 license = "MIT"
 authors = ["Alex <alex@neoxelox.com>"]
@@ -16,6 +16,7 @@ python = ">=3.7,<4.0"
 rich = "12.5.1"
 neoxelox-invoke = "2.0.0"
 download = "0.3.5"
+semantic-version = "2.10.0"
 
 [tool.poetry.dev-dependencies]
 autoflake = { git = "https://github.com/neoxelox/autoflake.git" }

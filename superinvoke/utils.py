@@ -1,10 +1,14 @@
 import os
+import re
 import shutil
 from enum import Enum
 from pathlib import Path
 from typing import List, Literal, Optional
 
+import semantic_version
 from download import download as fetch
+
+VERSION_REGEX = re.compile(r"(\d+\.\d+(?:\.\d+)?)", flags=re.MULTILINE)
 
 
 # String enumerator.
@@ -84,3 +88,28 @@ def extract(source_path: str, dest_path: str) -> None:
 # Downloads a file to the specified path.
 def download(url: str, path: str) -> None:
     fetch(str(url), str(path), progressbar=False, replace=True, verbose=False)
+
+
+# Checks whether an input has a compatible version with target.
+def has_compatible_version(input: str, target: str) -> bool:
+    if not target:
+        return False
+
+    try:
+        target = semantic_version.SimpleSpec(target)
+    except:
+        return False
+
+    for version in VERSION_REGEX.findall(input):
+        if not version:
+            continue
+
+        try:
+            version = semantic_version.Version(version)
+        except:
+            continue
+
+        if version in target:
+            return True
+
+    return False
