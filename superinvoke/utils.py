@@ -97,16 +97,20 @@ def has_compatible_version(input: str, target: str) -> bool:
 
     try:
         target = semantic_version.SimpleSpec(target)
-    except:
+    except Exception:
         return False
 
     for version in VERSION_REGEX.findall(input):
         if not version:
             continue
 
+        # Add base minor if not present
+        if len(version.split(".")) < 3:
+            version += ".0"
+
         try:
             version = semantic_version.Version(version)
-        except:
+        except Exception:
             continue
 
         if version in target:
