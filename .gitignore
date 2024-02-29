@@ -1,8 +1,14 @@
-# Own
+# Custom
 .vscode/
-scripts/
 .superinvoke_cache/
+.idea/
+*.tmlanguage.cache
+*.tmPreferences.cache
+*.stTheme.cache
+*.sublime-workspace
+.DS_Store
 makefile
+scripts/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

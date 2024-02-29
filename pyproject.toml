@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "superinvoke"
-version = "1.0.5"
+version = "1.0.6"
 description = "An Invoke wrapper with extra handy features."
 license = "MIT"
 authors = ["Alex <alex@neoxelox.com>"]
@@ -14,7 +14,7 @@ keywords = ["plugin", "wrapper", "invoke", "pyinvoke", "superinvoke"]
 [tool.poetry.dependencies]
 python = ">=3.7,<4.0"
 rich = "12.5.1"
-neoxelox-invoke = "2.0.0"
+neoxelox-invoke = "2.0.1"
 download = "0.3.5"
 semantic-version = "2.10.0"
 
