@@ -20,7 +20,7 @@ semantic-version = "2.10.0"
 
 [tool.poetry.dev-dependencies]
 autoflake = { git = "https://github.com/neoxelox/autoflake.git" }
-black = "24.1.1"
+black = "24.3.0"
 flake8 = "3.9.0"
 flake8-black = "0.2.3"
 flake8-colors = "0.1.9"
